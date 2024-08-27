@@ -34,6 +34,24 @@ def is_blurry(image):
     variance = np.var(np.array(edges))
     return variance < 50  # Adjust threshold as needed
 
+def is_bright(image):
+    """Check if the image is bright enough."""
+    np_image = np.array(image.convert("RGB"))
+    avg_brightness = np.mean(np_image)
+    return avg_brightness > 100  # Adjust brightness threshold as needed
+
+def is_colorful(image):
+    """Check if the image has good color variance."""
+    np_image = np.array(image.convert("RGB"))
+    colors = np_image.reshape(-1, 3)
+    unique_colors = np.unique(colors, axis=0)
+    return len(unique_colors) > 1000  # Adjust number of unique colors as needed
+
+def has_good_resolution(image):
+    """Check if the image has a good resolution."""
+    width, height = image.size
+    return width >= 800 and height >= 600  # Adjust these values as needed
+
 def rate_image(image_path):
     """Rate the image based on various criteria."""
     image = Image.open(image_path)
@@ -43,12 +61,16 @@ def rate_image(image_path):
     # Criteria for rating
     if is_blurry(image):
         score -= 3
-    
-    # Add additional criteria here as needed
-    
-    # Make sure the maximum score is 10
+    if not is_bright(image):
+        score -= 2
+    if not is_colorful(image):
+        score -= 2.5  # Penalize low color variance by 2.5 points
+    if not has_good_resolution(image):
+        score -= 2  # Penalize low-resolution images
+
+    # Ensure the maximum score is 10
     score = min(score, 10)
-    # Ensure score does not go below 0
+    # Ensure the score does not go below -10
     score = max(score, -10)
     
     return score, rating_texts.get(score, "Rating not available")
