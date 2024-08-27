@@ -83,15 +83,69 @@ def rate_image(image_path):
     
     return score, rating_texts.get(score, "Rating not available")
 
-# Streamlit UI
-st.title("Wallpaper Rating System")
+# Streamlit UI with custom styles
+st.markdown(
+    """
+    <style>
+    body {
+        background-color: #f4f4f9;
+    }
+    .main-container {
+        background-color: #ffffff;
+        border-radius: 15px;
+        padding: 20px;
+        max-width: 800px;
+        margin: 40px auto;
+        box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.1);
+    }
+    .title {
+        text-align: center;
+        font-size: 2.5em;
+        color: #333333;
+    }
+    .upload-area {
+        text-align: center;
+        padding: 20px;
+        border: 2px dashed #bbbbbb;
+        border-radius: 10px;
+        background-color: #fafafa;
+        margin-bottom: 20px;
+    }
+    .rating-output {
+        text-align: center;
+        font-size: 1.5em;
+        color: #555555;
+        margin-top: 20px;
+    }
+    .uploaded-image {
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        border-radius: 15px;
+        border: 3px solid #eeeeee;
+        margin-bottom: 20px;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
+st.markdown(
+    """
+    <div class="main-container">
+        <h1 class="title">AI Wallpaper Rater</h1>
+    </div>
+    """,
+    unsafe_allow_html=True
+)
 
 uploaded_file = st.file_uploader("Choose an image...", type=["jpg", "jpeg", "png"])
+
 if uploaded_file is not None:
     with open("temp.jpg", "wb") as f:
         f.write(uploaded_file.getvalue())
     
-    st.image(uploaded_file, caption="Uploaded Image", use_column_width=True)
+    st.image(uploaded_file, caption="Uploaded Image", use_column_width=True, output_format="PNG")
     
     score, rating = rate_image("temp.jpg")
-    st.write(f"Rating: {score} - {rating}")
+    st.markdown(f'<div class="rating-output">Rating: {score} - {rating}</div>', unsafe_allow_html=True)
