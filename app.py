@@ -1,8 +1,8 @@
 import streamlit as st
 from PIL import Image, ImageFilter
 import numpy as np
-import os
 import uuid
+import os
 
 # Define custom text outputs for each rating possibility
 rating_texts = {
@@ -92,12 +92,11 @@ def add_to_history(image_path, score, rating):
 
 def clear_history():
     st.session_state.rating_history = []
-    st.experimental_rerun()  # Refresh the app to reflect the cleared history
+    st.session_state.current_image_path = None  # Reset current image path
 
 def delete_history_item(index):
     if 0 <= index < len(st.session_state.rating_history):
         st.session_state.rating_history.pop(index)
-        st.experimental_rerun()  # Refresh the app to reflect the deletion
 
 def render_history():
     if st.session_state.rating_history:
@@ -112,6 +111,7 @@ def render_history():
             with col3:
                 if st.button(f"X", key=f"delete_{i}"):
                     delete_history_item(i)
+                    st.experimental_rerun()  # Refresh the app to reflect the deletion
             st.write("---")
     else:
         st.write("No history yet.")
@@ -182,6 +182,8 @@ if uploaded_file is not None:
     with open(unique_filename, "wb") as f:
         f.write(uploaded_file.getvalue())
     
+    st.session_state.current_image_path = unique_filename  # Track the current image path
+
     col1, col2 = st.columns([1, 1])
     
     with col1:
@@ -194,9 +196,7 @@ if uploaded_file is not None:
 
 st.markdown("<h2 class='title'>Rating History</h2>", unsafe_allow_html=True)
 
-if st.session_state.rating_history:
-    if st.button("Clear History"):
-        clear_history()
-    render_history()
-else:
-    st.write("No history yet.")
+if st.button("Clear History"):
+    clear_history()
+
+render_history()
