@@ -19,7 +19,7 @@ rating_texts = {
     1: "Not good at all",
     2: "Get a new wallpaper ASAP (rocky)",
     3: "NO.",
-    3.5: "No way 🤦❌"
+    3.5: "No way 🤦❌",
     4: "Big L Wallpaper",
     5: "Mid",
     6: "Above mid",
