@@ -1,6 +1,7 @@
 import streamlit as st
 from PIL import Image, ImageFilter
 import numpy as np
+import cv2
 
 # Define custom text outputs for each rating possibility
 rating_texts = {
@@ -28,45 +29,41 @@ rating_texts = {
 }
 
 def is_blurry(image):
-    """Check if the image is blurry using the variance of Laplacian method with PIL."""
-    grayscale_image = image.convert("L")  # Convert to grayscale
-    edges = grayscale_image.filter(ImageFilter.FIND_EDGES)
-    variance = np.var(np.array(edges))
-    return variance < 50  # Adjust threshold as needed
+    """Check if the image is blurry using the variance of Laplacian method."""
+    image_np = np.array(image.convert("L"))
+    focus = cv2.Laplacian(image_np, cv2.CV_64F).var()
+    return focus < 500  # Adjust threshold as needed
 
 def rate_image(image_path):
     """Rate the image based on various criteria."""
     image = Image.open(image_path)
     
     score = 10
-
-    # Criteria for rating
     
-    # Check if the image is blurry
+    # Criteria for rating
     if is_blurry(image):
         score -= 3
     
-    # Check for low resolution (must be HD or higher)
+    # Resolution check
     width, height = image.size
-    if width < 1920 or height < 1080:
-        score -= 3
-    
-    # Check brightness (must be sufficiently bright)
-    grayscale_image = image.convert('L')
-    brightness = np.mean(np.array(grayscale_image))
-    if brightness < 120:
+    if width < 1280 or height < 720:
         score -= 2
     
-    # Check color vibrancy (requires some level of color variation)
-    color_image = np.array(image)
-    if color_image.ndim == 3:
-        colorfulness = np.std(color_image, axis=(0, 1)).mean()
-        if colorfulness < 50:
-            score -= 2
+    # Brightness check
+    brightness = np.mean(np.array(image.convert('L')))
+    if brightness < 100:
+        score -= 2
     
-    # Additional criteria to make the rating 10 more exclusive
-    if (is_blurry(image) or width < 1920 or height < 1080 or brightness < 120 or colorfulness < 50):
-        score = max(score, 9)  # Enforce minimum score of 9 for rating 10
+    # Color Vibrancy
+    colorfulness = np.std(np.array(image), axis=(0, 1)).mean()
+    if colorfulness < 30:
+        score -= 1
+    
+    # Clutter (edges)
+    edges = cv2.Canny(np.array(image.convert('L')), 100, 200)
+    clutter = np.mean(edges)
+    if clutter > 200:
+        score -= 2
     
     # Normalize score within range
     score = max(-10, min(score, 10))
