@@ -1,7 +1,6 @@
 import streamlit as st
 from PIL import Image, ImageFilter
 import numpy as np
-import cv2
 
 # Define custom text outputs for each rating possibility
 rating_texts = {
@@ -29,10 +28,11 @@ rating_texts = {
 }
 
 def is_blurry(image):
-    """Check if the image is blurry using the variance of Laplacian method."""
-    image_np = np.array(image.convert("L"))
-    focus = cv2.Laplacian(image_np, cv2.CV_64F).var()
-    return focus < 500  # Adjust threshold as needed
+    """Check if the image is blurry using the variance of Laplacian method with PIL."""
+    grayscale_image = image.convert("L")  # Convert to grayscale
+    edges = grayscale_image.filter(ImageFilter.FIND_EDGES)
+    variance = np.var(np.array(edges))
+    return variance < 50  # Adjust threshold as needed
 
 def rate_image(image_path):
     """Rate the image based on various criteria."""
@@ -44,27 +44,8 @@ def rate_image(image_path):
     if is_blurry(image):
         score -= 3
     
-    # Resolution check
-    width, height = image.size
-    if width < 1280 or height < 720:
-        score -= 2
-    
-    # Brightness check
-    brightness = np.mean(np.array(image.convert('L')))
-    if brightness < 100:
-        score -= 2
-    
-    # Color Vibrancy
-    colorfulness = np.std(np.array(image), axis=(0, 1)).mean()
-    if colorfulness < 30:
-        score -= 1
-    
-    # Clutter (edges)
-    edges = cv2.Canny(np.array(image.convert('L')), 100, 200)
-    clutter = np.mean(edges)
-    if clutter > 200:
-        score -= 2
-    
+    # Add your additional criteria here...
+
     # Normalize score within range
     score = max(-10, min(score, 10))
     return score, rating_texts.get(score, "Rating not available")
