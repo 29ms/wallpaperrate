@@ -65,7 +65,7 @@ def rate_image(image_path):
     
     # Check if the image is only one color
     if is_one_color(image):
-        return 0, rating_texts[0]
+        return 0, rating_texts[0]  # Automatically score 0 if only one color
     
     score = 10
     
@@ -78,8 +78,8 @@ def rate_image(image_path):
     if not has_good_resolution(image):
         score -= 2
     
-    score = min(score, 10)
-    score = max(score, -10)
+    # Normalize score to be within the defined range
+    score = max(-10, min(score, 10))
     
     return score, rating_texts.get(score, "Rating not available")
 
