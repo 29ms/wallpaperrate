@@ -39,13 +39,35 @@ def rate_image(image_path):
     image = Image.open(image_path)
     
     score = 10
-    
+
     # Criteria for rating
+    
+    # Check if the image is blurry
     if is_blurry(image):
         score -= 3
     
-    # Add your additional criteria here...
-
+    # Check for low resolution (must be HD or higher)
+    width, height = image.size
+    if width < 1920 or height < 1080:
+        score -= 3
+    
+    # Check brightness (must be sufficiently bright)
+    grayscale_image = image.convert('L')
+    brightness = np.mean(np.array(grayscale_image))
+    if brightness < 120:
+        score -= 2
+    
+    # Check color vibrancy (requires some level of color variation)
+    color_image = np.array(image)
+    if color_image.ndim == 3:
+        colorfulness = np.std(color_image, axis=(0, 1)).mean()
+        if colorfulness < 50:
+            score -= 2
+    
+    # Additional criteria to make the rating 10 more exclusive
+    if (is_blurry(image) or width < 1920 or height < 1080 or brightness < 120 or colorfulness < 50):
+        score = max(score, 9)  # Enforce minimum score of 9 for rating 10
+    
     # Normalize score within range
     score = max(-10, min(score, 10))
     return score, rating_texts.get(score, "Rating not available")
