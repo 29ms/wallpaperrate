@@ -14,7 +14,7 @@ rating_texts = {
     -3: "Simply awful.",
     -2: "WAY Below average. Needs work.",
     -1: "Awful",
-    0: "Zero. Cmon dude",
+    0: "How bad is this wallpaper 😂",
     0.5: "Really bru? 💀🙏",
     1: "Not good at all",
     2: "Get a new wallpaper ASAP (rocky)",
@@ -22,10 +22,11 @@ rating_texts = {
     3.5: "No way 🤦❌",
     4: "Big L Wallpaper",
     5: "Mid",
-    6: "Above mid",
-    7: "Not bad",
-    8: "Pretty good",
-    9: "Exceptional quality. Very impressive.",
+    5.5: "Barely Mid",
+    6: "Above mid 👊",
+    7: "Not bad eh?",
+    8: "Pretty damn good",
+    9: "Ooh Lala! 👏",
     10: "W Wallpaper 💯"
 }
 
