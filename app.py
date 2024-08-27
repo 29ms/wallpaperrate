@@ -2,6 +2,7 @@ import streamlit as st
 from PIL import Image, ImageFilter
 import numpy as np
 import os
+import uuid
 
 # Define custom text outputs for each rating possibility
 rating_texts = {
@@ -36,27 +37,23 @@ if "rating_history" not in st.session_state:
     st.session_state.rating_history = []
 
 def is_blurry(image):
-    """Check if the image is blurry using the variance of Laplacian method with PIL."""
     grayscale_image = image.convert("L")
     edges = grayscale_image.filter(ImageFilter.FIND_EDGES)
     variance = np.var(np.array(edges))
     return variance < 50
 
 def is_bright(image):
-    """Check if the image is bright enough."""
     np_image = np.array(image.convert("RGB"))
     avg_brightness = np.mean(np_image)
     return avg_brightness > 100
 
 def is_colorful(image):
-    """Check if the image has good color variance."""
     np_image = np.array(image.convert("RGB"))
     colors = np_image.reshape(-1, 3)
     unique_colors = np.unique(colors, axis=0)
     return len(unique_colors) > 1000
 
 def has_good_resolution(image):
-    """Check if the image has a good resolution."""
     width, height = image.size
     return width >= 800 and height >= 600
 
@@ -103,9 +100,8 @@ def render_history():
     for i, entry in enumerate(st.session_state.rating_history):
         col1, col2, col3 = st.columns([1, 2, 1])
         with col1:
-            # Open the image file
             image = Image.open(entry["image_path"])
-            st.image(image, width=50)
+            st.image(image, width=100)  # Adjusted width for better view
         with col2:
             st.write(f"Rating: {entry['score']} - {entry['rating']}")
         with col3:
@@ -175,18 +171,20 @@ st.markdown(
 uploaded_file = st.file_uploader("Choose an image...", type=["jpg", "jpeg", "png"])
 
 if uploaded_file is not None:
-    with open("temp.jpg", "wb") as f:
+    # Generate a unique filename for the uploaded image
+    unique_filename = f"temp_{uuid.uuid4().hex}.jpg"
+    with open(unique_filename, "wb") as f:
         f.write(uploaded_file.getvalue())
     
     col1, col2 = st.columns([1, 1])
     
     with col1:
-        st.image("temp.jpg", caption="Uploaded Image", use_column_width=True, output_format="PNG")
+        st.image(unique_filename, caption="Uploaded Image", use_column_width=True, output_format="PNG")
     
     with col2:
-        score, rating = rate_image("temp.jpg")
+        score, rating = rate_image(unique_filename)
         st.markdown(f'<div class="rating-output">Rating: {score} - {rating}</div>', unsafe_allow_html=True)
-        add_to_history("temp.jpg", score, rating)
+        add_to_history(unique_filename, score, rating)
 
 st.markdown("<h2 class='title'>Rating History</h2>", unsafe_allow_html=True)
 
@@ -196,4 +194,3 @@ if st.session_state.rating_history:
     render_history()
 else:
     st.write("No history yet.")
-
