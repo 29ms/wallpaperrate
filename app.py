@@ -92,22 +92,29 @@ def add_to_history(image_path, score, rating):
 
 def clear_history():
     st.session_state.rating_history = []
+    st.experimental_rerun()  # Refresh the app to reflect the cleared history
 
 def delete_history_item(index):
-    del st.session_state.rating_history[index]
+    if 0 <= index < len(st.session_state.rating_history):
+        st.session_state.rating_history.pop(index)
+        st.experimental_rerun()  # Refresh the app to reflect the deletion
 
 def render_history():
-    for i, entry in enumerate(st.session_state.rating_history):
-        col1, col2, col3 = st.columns([1, 2, 1])
-        with col1:
-            image = Image.open(entry["image_path"])
-            st.image(image, width=100)  # Adjusted width for better view
-        with col2:
-            st.write(f"Rating: {entry['score']} - {entry['rating']}")
-        with col3:
-            if st.button("X", key=f"delete_{i}"):
-                delete_history_item(i)
+    if st.session_state.rating_history:
         st.write("---")
+        for i, entry in enumerate(st.session_state.rating_history):
+            col1, col2, col3 = st.columns([1, 2, 1])
+            with col1:
+                image = Image.open(entry["image_path"])
+                st.image(image, width=100)  # Adjusted width for better view
+            with col2:
+                st.write(f"Rating: {entry['score']} - {entry['rating']}")
+            with col3:
+                if st.button(f"X", key=f"delete_{i}"):
+                    delete_history_item(i)
+            st.write("---")
+    else:
+        st.write("No history yet.")
 
 # Streamlit UI with custom styles
 st.markdown(
@@ -171,7 +178,6 @@ st.markdown(
 uploaded_file = st.file_uploader("Choose an image...", type=["jpg", "jpeg", "png"])
 
 if uploaded_file is not None:
-    # Generate a unique filename for the uploaded image
     unique_filename = f"temp_{uuid.uuid4().hex}.jpg"
     with open(unique_filename, "wb") as f:
         f.write(uploaded_file.getvalue())
@@ -189,8 +195,8 @@ if uploaded_file is not None:
 st.markdown("<h2 class='title'>Rating History</h2>", unsafe_allow_html=True)
 
 if st.session_state.rating_history:
-    st.button("Clear History", on_click=clear_history)
-    st.write("---")
+    if st.button("Clear History"):
+        clear_history()
     render_history()
 else:
     st.write("No history yet.")
