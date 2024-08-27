@@ -103,7 +103,9 @@ def render_history():
     for i, entry in enumerate(st.session_state.rating_history):
         col1, col2, col3 = st.columns([1, 2, 1])
         with col1:
-            st.image(entry["image_path"], width=50)
+            # Open the image file
+            image = Image.open(entry["image_path"])
+            st.image(image, width=50)
         with col2:
             st.write(f"Rating: {entry['score']} - {entry['rating']}")
         with col3:
