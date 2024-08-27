@@ -55,25 +55,30 @@ def has_good_resolution(image):
     width, height = image.size
     return width >= 800 and height >= 600  # Adjust these values as needed
 
+def is_one_color(image):
+    np_image = np.array(image.convert("RGB"))
+    unique_colors = np.unique(np_image.reshape(-1, 3), axis=0)
+    return len(unique_colors) == 1
+
 def rate_image(image_path):
-    """Rate the image based on various criteria."""
     image = Image.open(image_path)
+    
+    # Check if the image is only one color
+    if is_one_color(image):
+        return 0, rating_texts[0]
     
     score = 10
     
-    # Criteria for rating
     if is_blurry(image):
         score -= 3
     if not is_bright(image):
         score -= 2
     if not is_colorful(image):
-        score -= 2.5  # Penalize low color variance by 2.5 points
+        score -= 2.5
     if not has_good_resolution(image):
-        score -= 2  # Penalize low-resolution images
-
-    # Ensure the maximum score is 10
+        score -= 2
+    
     score = min(score, 10)
-    # Ensure the score does not go below -10
     score = max(score, -10)
     
     return score, rating_texts.get(score, "Rating not available")
