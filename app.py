@@ -32,7 +32,7 @@ rating_texts = {
 
 def is_blurry(image):
     """Check if the image is blurry using the variance of Laplacian method with PIL."""
-    grayscale_image = image.convert("L")  # Convert to grayscale
+    grayscale_image = image.convert("L")
     edges = grayscale_image.filter(ImageFilter.FIND_EDGES)
     variance = np.var(np.array(edges))
     return variance < 50  # Adjust threshold as needed
@@ -83,6 +83,10 @@ def rate_image(image_path):
     
     return score, rating_texts.get(score, "Rating not available")
 
+# Initialize session state for rating history
+if "rating_history" not in st.session_state:
+    st.session_state.rating_history = []
+
 # Streamlit UI with custom styles
 st.markdown(
     """
@@ -124,6 +128,14 @@ st.markdown(
         border-radius: 15px;
         border: 3px solid #eeeeee;
         margin-bottom: 20px;
+        max-width: 400px;
+        height: auto;
+    }
+    .rating-history {
+        text-align: center;
+        margin-top: 20px;
+        font-size: 1.2em;
+        color: #777777;
     }
     </style>
     """,
@@ -145,7 +157,18 @@ if uploaded_file is not None:
     with open("temp.jpg", "wb") as f:
         f.write(uploaded_file.getvalue())
     
-    st.image(uploaded_file, caption="Uploaded Image", use_column_width=True, output_format="PNG")
+    st.image(uploaded_file, caption="Uploaded Image", use_column_width=False, output_format="PNG", width=400)
     
     score, rating = rate_image("temp.jpg")
     st.markdown(f'<div class="rating-output">Rating: {score} - {rating}</div>', unsafe_allow_html=True)
+    
+    # Update rating history
+    st.session_state.rating_history.append((score, rating))
+    if len(st.session_state.rating_history) > 5:
+        st.session_state.rating_history.pop(0)
+    
+    # Display rating history
+    st.markdown("<div class='rating-history'><b>Rating History:</b></div>", unsafe_allow_html=True)
+    for idx, (history_score, history_rating) in enumerate(reversed(st.session_state.rating_history)):
+        st.markdown(f"<div class='rating-history'>#{idx+1}: Rating: {history_score} - {history_rating}</div>", unsafe_allow_html=True)
+
