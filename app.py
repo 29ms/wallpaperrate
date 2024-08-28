@@ -101,16 +101,16 @@ st.markdown(
     """
     <style>
     body {
-        background-color: #f5f5f5;
-        font-family: Arial, sans-serif;
+        background-color: #f0f0f0;
+        font-family: 'Arial', sans-serif;
     }
     .main-container {
         background-color: #ffffff;
-        border-radius: 15px;
+        border-radius: 12px;
         padding: 20px;
         max-width: 900px;
         margin: 40px auto;
-        box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.1);
+        box-shadow: 0px 6px 18px rgba(0, 0, 0, 0.1);
     }
     .title {
         text-align: center;
@@ -121,7 +121,7 @@ st.markdown(
     .upload-area {
         text-align: center;
         padding: 20px;
-        border: 2px dashed #bbbbbb;
+        border: 2px dashed #cccccc;
         border-radius: 10px;
         background-color: #f7f9fc;
         margin-bottom: 20px;
@@ -133,14 +133,14 @@ st.markdown(
         margin-bottom: 20px;
     }
     .uploaded-image {
-        border-radius: 15px;
-        border: 3px solid #e1e4e8;
+        border-radius: 12px;
+        border: 2px solid #dddddd;
         margin-right: 20px;
+        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
     }
     .rating-output {
         font-size: 1.5em;
         color: #444444;
-        margin-left: 20px;
         text-align: center;
     }
     .history-container {
@@ -150,11 +150,12 @@ st.markdown(
         display: flex;
         align-items: center;
         padding: 10px;
-        border-bottom: 1px solid #e1e4e8;
+        border-bottom: 1px solid #eeeeee;
     }
     .history-entry img {
         border-radius: 10px;
         margin-right: 20px;
+        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
     }
     .history-entry div {
         flex-grow: 1;
@@ -163,14 +164,15 @@ st.markdown(
         margin-top: 20px;
         background-color: #e63946;
         color: white;
-        padding: 10px;
+        padding: 12px;
         border: none;
-        border-radius: 5px;
+        border-radius: 8px;
         font-size: 1.2em;
         cursor: pointer;
         display: block;
         width: 100%;
         text-align: center;
+        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
     }
     .clear-button:hover {
         background-color: #d62839;
@@ -204,18 +206,17 @@ if uploaded_file is not None:
     col1, col2 = st.columns([2, 1])
 
     with col1:
-        st.markdown(f'<div class="image-rating-container"><img src="{unique_filename}" class="uploaded-image" /><div class="rating-output">Rating: {rating} - {rating_text}</div></div>', unsafe_allow_html=True)
+        score, rating_text = rate_image(unique_filename)
+        st.markdown(f'<div class="image-rating-container"><img src="{unique_filename}" class="uploaded-image" /><div class="rating-output">Rating: {score} - {rating_text}</div></div>', unsafe_allow_html=True)
     
     with col2:
-        score, rating_text = rate_image(unique_filename)
-        st.markdown(f'<div class="rating-output">Rating: {score} - {rating_text}</div>', unsafe_allow_html=True)
         add_to_history(unique_filename, score, rating_text)
 
     st.markdown("</div>", unsafe_allow_html=True)
 
 st.markdown("<h2 class='title'>Rating History</h2>", unsafe_allow_html=True)
 
-if st.button("Clear History", key="clear_history", class_="clear-button"):
+if st.button("Clear History", key="clear_history"):
     clear_history()
 
 if st.session_state.rating_history:
