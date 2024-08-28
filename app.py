@@ -156,7 +156,6 @@ st.markdown(
     }
     .clear-button {
         margin-top: 20px;
-        display: block;
         background-color: #e63946;
         color: white;
         padding: 10px;
@@ -203,7 +202,7 @@ if uploaded_file is not None:
 
 st.markdown("<h2 class='title'>Rating History</h2>", unsafe_allow_html=True)
 
-if st.button("Clear History", key="clear_history", css_class="clear-button"):
+if st.button("Clear History", key="clear_history"):
     clear_history()
 
 if st.session_state.rating_history:
