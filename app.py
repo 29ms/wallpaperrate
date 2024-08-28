@@ -185,7 +185,7 @@ st.markdown(
 st.markdown(
     """
     <div class="main-container">
-        <h1 class="title">AI Wallpaper Rater</h1>
+        <h1 class="title">AI Lockscreen Rater</h1>
     </div>
     """,
     unsafe_allow_html=True
