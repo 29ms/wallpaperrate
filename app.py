@@ -101,7 +101,7 @@ st.markdown(
     """
     <style>
     body {
-        background-color: #f5f5f5;
+        background-color: #f0f0f0;
         font-family: 'Arial', sans-serif;
     }
     .main-container {
@@ -115,16 +115,15 @@ st.markdown(
     .title {
         text-align: center;
         font-size: 2.5em;
-        color: #d62839; /* Red color */
+        color: #333333;
         margin-bottom: 20px;
-        font-weight: bold;
     }
     .upload-area {
         text-align: center;
         padding: 20px;
-        border: 2px dashed #d62839; /* Red border */
+        border: 2px dashed #cccccc;
         border-radius: 10px;
-        background-color: #ffe8e8; /* Light red background */
+        background-color: #f7f9fc;
         margin-bottom: 20px;
     }
     .image-rating-container {
@@ -135,12 +134,12 @@ st.markdown(
     }
     .uploaded-image {
         border-radius: 12px;
-        border: 2px solid #d62839; /* Red border */
+        border: 2px solid #dddddd;
         box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
     }
     .rating-output {
         font-size: 1.5em;
-        color: #d62839; /* Red color */
+        color: #444444;
         text-align: center;
         margin-left: 20px;
     }
@@ -163,7 +162,7 @@ st.markdown(
     }
     .clear-button {
         margin-top: 20px;
-        background-color: #d62839; /* Red button */
+        background-color: #e63946;
         color: white;
         padding: 12px;
         border: none;
@@ -176,7 +175,7 @@ st.markdown(
         box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
     }
     .clear-button:hover {
-        background-color: #e63946; /* Darker red on hover */
+        background-color: #d62839;
     }
     </style>
     """,
@@ -213,7 +212,7 @@ if uploaded_file is not None:
 
 st.markdown("<h2 class='title'>Rating History</h2>", unsafe_allow_html=True)
 
-if st.button("Clear History", key="clear_history", help="Clear all ratings from history", css_class="clear-button"):
+if st.button("Clear History", key="clear_history", help="Clear all ratings from history"):
     clear_history()
 
 if st.session_state.rating_history:
