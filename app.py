@@ -94,26 +94,22 @@ def add_to_history(image_path, score, rating):
 
 def clear_history():
     st.session_state.rating_history = []
-    st.session_state.current_image_path = None  # Reset current image path
-
-def delete_history_item(index):
-    if 0 <= index < len(st.session_state.rating_history):
-        st.session_state.rating_history.pop(index)
+    st.session_state.current_image_path = None
 
 # Streamlit UI with custom styles
 st.markdown(
     """
     <style>
     body {
-        background-color: #f4f4f9;
+        background-color: #f0f2f6;
     }
     .main-container {
         background-color: #ffffff;
         border-radius: 15px;
         padding: 20px;
-        max-width: 800px;
+        max-width: 900px;
         margin: 40px auto;
-        box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.1);
+        box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.1);
     }
     .title {
         text-align: center;
@@ -125,13 +121,13 @@ st.markdown(
         padding: 20px;
         border: 2px dashed #bbbbbb;
         border-radius: 10px;
-        background-color: #fafafa;
+        background-color: #f7f9fc;
         margin-bottom: 20px;
     }
     .rating-output {
-        text-align: left;
+        text-align: center;
         font-size: 1.5em;
-        color: #555555;
+        color: #444444;
         margin-top: 20px;
     }
     .uploaded-image {
@@ -139,11 +135,38 @@ st.markdown(
         margin-left: auto;
         margin-right: auto;
         border-radius: 15px;
-        border: 3px solid #eeeeee;
+        border: 3px solid #e1e4e8;
         margin-bottom: 20px;
     }
     .history-container {
         margin-top: 30px;
+    }
+    .history-entry {
+        display: flex;
+        align-items: center;
+        padding: 10px;
+        border-bottom: 1px solid #e1e4e8;
+    }
+    .history-entry img {
+        border-radius: 10px;
+        margin-right: 20px;
+    }
+    .history-entry div {
+        flex-grow: 1;
+    }
+    .clear-button {
+        margin-top: 20px;
+        display: block;
+        background-color: #e63946;
+        color: white;
+        padding: 10px;
+        border: none;
+        border-radius: 5px;
+        font-size: 1.2em;
+        cursor: pointer;
+    }
+    .clear-button:hover {
+        background-color: #d62839;
     }
     </style>
     """,
@@ -180,22 +203,17 @@ if uploaded_file is not None:
 
 st.markdown("<h2 class='title'>Rating History</h2>", unsafe_allow_html=True)
 
-if st.button("Clear History"):
+if st.button("Clear History", key="clear_history", css_class="clear-button"):
     clear_history()
 
 if st.session_state.rating_history:
     st.write("---")
-    for i, entry in enumerate(st.session_state.rating_history):
-        col1, col2, col3 = st.columns([1, 2, 1])
+    for entry in st.session_state.rating_history:
+        col1, col2 = st.columns([1, 3])
         with col1:
             image = Image.open(entry["image_path"])
-            st.image(image, width=100)  # Adjusted width for better view
+            st.image(image, width=100)
         with col2:
             st.write(f"Rating: {entry['score']} - {entry['rating']}")
-        with col3:
-            if st.button(f"X", key=f"delete_{i}"):
-                delete_history_item(i)
-                st.session_state.rating_history = st.session_state.rating_history[:]  # Update history
-        st.write("---")
 else:
     st.write("No history yet.")
