@@ -35,6 +35,8 @@ rating_texts = {
 # Initialize session state for rating history
 if "rating_history" not in st.session_state:
     st.session_state.rating_history = []
+if "current_image_path" not in st.session_state:
+    st.session_state.current_image_path = None
 
 def is_blurry(image):
     grayscale_image = image.convert("L")
@@ -97,24 +99,6 @@ def clear_history():
 def delete_history_item(index):
     if 0 <= index < len(st.session_state.rating_history):
         st.session_state.rating_history.pop(index)
-
-def render_history():
-    if st.session_state.rating_history:
-        st.write("---")
-        for i, entry in enumerate(st.session_state.rating_history):
-            col1, col2, col3 = st.columns([1, 2, 1])
-            with col1:
-                image = Image.open(entry["image_path"])
-                st.image(image, width=100)  # Adjusted width for better view
-            with col2:
-                st.write(f"Rating: {entry['score']} - {entry['rating']}")
-            with col3:
-                if st.button(f"X", key=f"delete_{i}"):
-                    delete_history_item(i)
-                    st.experimental_rerun()  # Refresh the app to reflect the deletion
-            st.write("---")
-    else:
-        st.write("No history yet.")
 
 # Streamlit UI with custom styles
 st.markdown(
@@ -182,9 +166,9 @@ if uploaded_file is not None:
     with open(unique_filename, "wb") as f:
         f.write(uploaded_file.getvalue())
     
-    st.session_state.current_image_path = unique_filename  # Track the current image path
+    st.session_state.current_image_path = unique_filename
 
-    col1, col2 = st.columns([1, 1])
+    col1, col2 = st.columns([2, 1])
     
     with col1:
         st.image(unique_filename, caption="Uploaded Image", use_column_width=True, output_format="PNG")
@@ -199,4 +183,19 @@ st.markdown("<h2 class='title'>Rating History</h2>", unsafe_allow_html=True)
 if st.button("Clear History"):
     clear_history()
 
-render_history()
+if st.session_state.rating_history:
+    st.write("---")
+    for i, entry in enumerate(st.session_state.rating_history):
+        col1, col2, col3 = st.columns([1, 2, 1])
+        with col1:
+            image = Image.open(entry["image_path"])
+            st.image(image, width=100)  # Adjusted width for better view
+        with col2:
+            st.write(f"Rating: {entry['score']} - {entry['rating']}")
+        with col3:
+            if st.button(f"X", key=f"delete_{i}"):
+                delete_history_item(i)
+                st.session_state.rating_history = st.session_state.rating_history[:]  # Update history
+        st.write("---")
+else:
+    st.write("No history yet.")
