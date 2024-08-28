@@ -6,7 +6,7 @@ import os
 
 # Define custom text outputs for each rating possibility
 rating_texts = {
-    -10: "L WALLPAPER 😂",
+    -10: "L wallpaper 😂",
     -9: "Absolute trash.",
     -8: "Terrible wallpaper",
     -7: "Awful just awful",
@@ -22,14 +22,14 @@ rating_texts = {
     2: "Get a new wallpaper ASAP (rocky)",
     3: "NO.",
     3.5: "No way 🤦❌",
-    4: "Big L Wallpaper",
+    4: "Too Basic",
     5: "Mid",
     5.5: "Barely Mid",
     6: "Above mid 👊",
     7: "Not bad eh?",
     8: "Pretty damn good",
     9: "Ooh Lala! 👏",
-    10: "W Wallpaper 💯"
+    10: "W wallpaper 💯"
 }
 
 # Initialize session state for rating history
@@ -185,7 +185,7 @@ st.markdown(
 st.markdown(
     """
     <div class="main-container">
-        <h1 class="title">AI Lockscreen Rater</h1>
+        <h1 class="title">AI Wallpaper Rater</h1>
     </div>
     """,
     unsafe_allow_html=True
