@@ -101,7 +101,8 @@ st.markdown(
     """
     <style>
     body {
-        background-color: #f0f2f6;
+        background-color: #f5f5f5;
+        font-family: Arial, sans-serif;
     }
     .main-container {
         background-color: #ffffff;
@@ -115,6 +116,7 @@ st.markdown(
         text-align: center;
         font-size: 2.5em;
         color: #333333;
+        margin-bottom: 20px;
     }
     .upload-area {
         text-align: center;
@@ -124,19 +126,22 @@ st.markdown(
         background-color: #f7f9fc;
         margin-bottom: 20px;
     }
-    .rating-output {
-        text-align: center;
-        font-size: 1.5em;
-        color: #444444;
-        margin-top: 20px;
+    .image-rating-container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 20px;
     }
     .uploaded-image {
-        display: block;
-        margin-left: auto;
-        margin-right: auto;
         border-radius: 15px;
         border: 3px solid #e1e4e8;
-        margin-bottom: 20px;
+        margin-right: 20px;
+    }
+    .rating-output {
+        font-size: 1.5em;
+        color: #444444;
+        margin-left: 20px;
+        text-align: center;
     }
     .history-container {
         margin-top: 30px;
@@ -163,6 +168,9 @@ st.markdown(
         border-radius: 5px;
         font-size: 1.2em;
         cursor: pointer;
+        display: block;
+        width: 100%;
+        text-align: center;
     }
     .clear-button:hover {
         background-color: #d62839;
@@ -190,19 +198,24 @@ if uploaded_file is not None:
     
     st.session_state.current_image_path = unique_filename
 
+    st.markdown("<div class='upload-area'>", unsafe_allow_html=True)
+    st.image(unique_filename, caption="Uploaded Image", use_column_width=True, output_format="PNG", class_="uploaded-image")
+
     col1, col2 = st.columns([2, 1])
-    
+
     with col1:
-        st.image(unique_filename, caption="Uploaded Image", use_column_width=True, output_format="PNG")
+        st.markdown(f'<div class="image-rating-container"><img src="{unique_filename}" class="uploaded-image" /><div class="rating-output">Rating: {rating} - {rating_text}</div></div>', unsafe_allow_html=True)
     
     with col2:
-        score, rating = rate_image(unique_filename)
-        st.markdown(f'<div class="rating-output">Rating: {score} - {rating}</div>', unsafe_allow_html=True)
-        add_to_history(unique_filename, score, rating)
+        score, rating_text = rate_image(unique_filename)
+        st.markdown(f'<div class="rating-output">Rating: {score} - {rating_text}</div>', unsafe_allow_html=True)
+        add_to_history(unique_filename, score, rating_text)
+
+    st.markdown("</div>", unsafe_allow_html=True)
 
 st.markdown("<h2 class='title'>Rating History</h2>", unsafe_allow_html=True)
 
-if st.button("Clear History", key="clear_history"):
+if st.button("Clear History", key="clear_history", class_="clear-button"):
     clear_history()
 
 if st.session_state.rating_history:
